@@ -238,4 +238,3 @@ st.markdown(
     'Not a medical device and not a substitute for a clinician.</div>',
     unsafe_allow_html=True,
 )
-
