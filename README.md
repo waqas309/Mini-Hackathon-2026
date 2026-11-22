@@ -51,12 +51,11 @@ streamlit run app.py
 | Marvi Malik | Streamlit UI, README, deployment, demo video and pitch |
 
 ## AI Log
-<Write only real AI mistakes the team caught and fixed. At least 2 are required.>
+Mistakes made by the AI assistant that the team caught and fixed.
 
 | # | What the AI suggested or got wrong | How we noticed | How we fixed it |
 | --- | --- | --- | --- |
-| 1 | | | |
-| 2 | | | |
+| 1 | The AI-generated first version of `app.py` used the feature name `HCT` and had no `RDW` input, based on a generic CBC layout rather than our dataset. | We printed the header of `cleaned_cbc.csv` (Age, Gender, RBC, PCV, MCV, MCH, MCHC, RDW, WBC, PLT, HGB) and compared it with the feature list in the app. | Renamed `HCT` to `PCV`, added an `RDW` input with its normal range (11.5 to 14.5 %), updated both sample presets, and re-tested the normal and leukopenia samples.
 
 ## Future Improvements
 - Extend the screen to other blood disorders (anemia, thrombocytopenia).
