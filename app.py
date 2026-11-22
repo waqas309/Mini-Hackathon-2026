@@ -85,7 +85,7 @@ html, body, .stApp{font-family:'IBM Plex Sans',sans-serif;color:var(--ink);}
 .sec{font:500 .75rem 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;
      color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:.4rem;margin:1rem 0 .8rem;}
 
-[data-testid="stWidgetLabel"] p{font:500 .7rem 'IBM Plex Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+[data-testid="stWidgetLabel"] p{font:500 .7rem 'IBM Plex Mono',monospace;letter-spacing:.08em;color:var(--muted);}
 div[data-baseweb="input"], div[data-baseweb="select"] > div{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:2px!important;}
 input{font-family:'IBM Plex Mono',monospace!important;color:var(--ink)!important;}
 
