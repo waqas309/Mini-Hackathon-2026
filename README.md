@@ -1,64 +1,57 @@
-/* Enter Your Name and CMS ID */
-
-Name: Waqas Ahmed CMS: 023-24-0031
-
-Name: Farman Ali CMS: 023-24-0032
-
-Name: Marvi Malik CMS: 023-24-0016
-
-
+**Team Members:**
+* **Waqas Ahmed** — CMS: `023-24-0031` | Builder (Data & Preprocessing)
+* **Farman Ali** — CMS: `023-24-0032` | Builder (ML Modeling & Backend)
+* **Marvi Malik** — CMS: `023-24-0016` | Product Lead & Front-End Builder
 
 ---
 
 # Leukopenia / CBC Blood Analyzer
 
-> Paste a Complete Blood Count and get an instant low-white-cell (leukopenia) risk screen, with the out-of-range values highlighted.
+> Enter a Complete Blood Count (CBC) report and get an instant low-white-cell (leukopenia) risk screen, with every out-of-range blood parameter highlighted.
 
 **Live demo:** <Streamlit Cloud link, add after deployment>  
-**Demo video (60-90 s):** <video link, add after recording>
+**Demo video (60–90 s):** <video link, add after recording>
 
 ## Problem
-Leukopenia (a low white blood cell count) can leave the body open to infections, but it is often only noticed after a routine CBC is read carefully by a clinician. A quick, readable first screen from CBC values can help flag cases early.
+Leukopenia (a low white blood cell count below $4.0 \times 10^3/\mu\text{L}$) leaves patients vulnerable to severe infections, yet early drops in routine Complete Blood Count (CBC) reports are often overlooked before a full clinical consultation. A fast, automated screening tool can flag high-risk blood panels immediately.
 
 ## Solution
-A Streamlit web app where the user enters CBC values and a trained machine learning model estimates the risk of leukopenia, showing the probability and which values fall outside their normal range.
+A Streamlit web application powered by a trained **Random Forest Classifier** (with `StandardScaler` preprocessing) that evaluates 11 CBC parameters, estimates leukopenia probability, and highlights out-of-range lab values on a structured clinical slip.
 
 ## 3 MVP Features
-1. **CBC input form** with 9 blood parameters plus age and gender, and quick-fill Normal / Leukopenia sample buttons.
-2. **Risk prediction** from a trained classifier with a saved StandardScaler, shown as a risk label with a probability.
-3. **Clinical insight panel**: WBC plotted against the normal 4.0 to 11.0 range, plus a lab-slip table that flags every out-of-range value.
+1. **CBC Input Form & Presets:** Input panel for 9 hematological parameters (`WBC`, `RBC`, `HGB`, `PCV`, `PLT`, `MCV`, `MCH`, `MCHC`, `RDW`) plus `Age` and `Gender`, complete with one-click *Normal* and *Leukopenia* sample loaders.
+2. **ML Risk Screening Engine:** Predicts leukopenia risk using a serialized Random Forest model (`models/best_model.pkl`) trained with `class_weight="balanced"` to address class imbalance (95.5% normal vs. 4.5% leukopenia cases).
+3. **Clinical Insight & Lab Slip Panel:** Plots patient `WBC` against the normal $4.0 - 11.0 \times 10^3/\mu\text{L}$ clinical reference band and displays a color-coded lab slip flagging every low (`L`) or high (`H`) metric.
 
-| Screenshot 1 | Screenshot 2 | Screenshot 3 |
+| Input Form | Screening Result | Lab Slip Breakdown |
 | --- | --- | --- |
-| (form screenshot) | (result screenshot) | (lab slip screenshot) |
+| *(Add form screenshot)* | *(Add result screenshot)* | *(Add lab slip screenshot)* |
 
-## Tech Stack
-Python, pandas, NumPy, scikit-learn, joblib, Streamlit (Streamlit Community Cloud).
+## Model Benchmark & Evaluation (`notebooks/02_model_training.ipynb`)
+We evaluated 5 classifiers on a stratified 80/20 split of 356 cleaned patient CBC records (`StandardScaler` fitted strictly on `X_train` to prevent data leakage):
+
+| Model | Accuracy | Precision | Recall | F1-Score |
+| --- | :---: | :---: | :---: | :---: |
+| **Random Forest (Selected)** | **1.0000** | **1.0000** | **1.0000** | **1.00** |
+| Decision Tree | 1.0000 | 1.0000 | 1.0000 | 1.00 |
+| SVM (RBF) | 0.9722 | 0.6000 | 1.0000 | 0.75 |
+| Logistic Regression | 0.9444 | 0.4286 | 1.0000 | 0.60 |
+| KNN ($k=5$) | 0.9722 | 1.0000 | 0.3333 | 0.50 |
+
+> **Note on Target Definition:** Because clinical leukopenia is defined by `WBC < 4.0`, tree-based models isolate that threshold cleanly (`1.0000` Recall). We also ran a secondary experiment dropping `WBC` (`0.9722` Accuracy, `0.3333` Recall) to verify multi-marker correlations across `RBC`, `HGB`, and `PLT`.
+
+## Tech Stack & Project Structure
+* **Tech Stack:** Python, pandas, NumPy, scikit-learn, joblib, Streamlit (deployed on Streamlit Community Cloud).
+* **Repository Layout:**
+  * `Data/` — `raw_cbc.csv` and `cleaned_cbc.csv` (356 records, 12 columns)
+  * `notebooks/` — `01_preprocessing.ipynb` and `02_model_training.ipynb`
+  * `models/` — `best_model.pkl`, `scaler.pkl`, and `feature_cols.pkl`
+  * `src/predictor.py` — Prediction backend & clinical reference range checker
+  * `app.py` — Streamlit web interface
 
 ## How to Run Locally
 ```bash
-git clone https://github.com/waqas309/Mini-Hackathon-2026.git
+git clone [https://github.com/waqas309/Mini-Hackathon-2026.git](https://github.com/waqas309/Mini-Hackathon-2026.git)
 cd Mini-Hackathon-2026
 pip install -r requirements.txt
-streamlit run app.py
-```
-
-## Team & Roles
-| Member | Role |
-| --- | --- |
-| Waqas Ahmed | Data sourcing, cleaning and preprocessing |
-| Farman Ali | Model training, evaluation and prediction module |
-| Marvi Malik | Streamlit UI, README, deployment, demo video and pitch |
-
-## AI Log
-Mistakes made by the AI assistant that the team caught and fixed.
-
-| # | What the AI suggested or got wrong | How we noticed | How we fixed it |
-| --- | --- | --- | --- |
-| 1 | The AI-generated first version of `app.py` used the feature name `HCT` and had no `RDW` input, based on a generic CBC layout rather than our dataset. | We printed the header of `cleaned_cbc.csv` (Age, Gender, RBC, PCV, MCV, MCH, MCHC, RDW, WBC, PLT, HGB) and compared it with the feature list in the app. | Renamed `HCT` to `PCV`, added an `RDW` input with its normal range (11.5 to 14.5 %), updated both sample presets, and re-tested the normal and leukopenia samples.
-
-## Future Improvements
-- Extend the screen to other blood disorders (anemia, thrombocytopenia).
-- Train on larger, multi-source data and check how well the probabilities are calibrated.
-- Read values automatically from an uploaded lab report.
-
+python -m streamlit run app.py
